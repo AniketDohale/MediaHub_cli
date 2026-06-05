@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Media Library{% endblock %}
+
+{% block header_icons %}
+<!-- No Icons on Media Page -->
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/media_Style.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="media-container">
+
+    <div class="header-btns">
+        <input type="text" id="videoSearch" placeholder="Search..." >
+    </div>
+
+    <div class="media-header">
+        <h2>Media Library</h2>
+
+        <div class="header-right">
+            <div class="media-data" id="videoCount">
+                {{ videos|length }} Videos
+            </div>
+        </div>
+    </div>
+
+    {% if videos %}
+    {% set categories = videos | map(attribute='category') | unique | list %}
+
+    <div class="category-bar">
+        <button class="cat-btn active" data-category="All">
+            All
+        </button>
+        {% for cat in categories %}
+            <button class="cat-btn" data-category="{{ cat }}">
+                {{ cat }}
+            </button>
+        {% endfor %}
+    </div>
+
+    <div class="video-grid" id="videoGrid">
+
+        {% for video in videos %}
+        <div class="video-card searchable" data-category="{{ video.category }}">
+
+            <a class="video-link" href="{{ url_for('media_Player', video_id=video.id) }}">
+
+                <img class="thumbnail" src="{{ url_for('thumbnail', video_id=video.id) }}" alt="thumbnail">
+                
+                <div class="video-meta">
+                    <div class="video-name">
+                        {{ video.name }}
+                    </div>
+
+                    <div class="video-path">
+                        <span class="meta-pill">{{ video.metadata.resolution if video.metadata is defined else "Unknown" }}</span>
+                        <span class="meta-pill">{{ video.metadata.duration if video.metadata is defined else "Unknown"}}</span>
+                        <span class="meta-pill">{{ video.metadata.size_mb if video.metadata is defined else "Unknown"}} MB</span>
+
+                        {% if video.has_subtitle %}
+                            <span class="meta-pill subtitle-badge">CC</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+
+    <div class="empty-state">
+        <h3>No Videos Found.</h3>
+        <p>Check Your Media Scan Path.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const searchInput = document.getElementById("videoSearch");
+    const buttons = document.querySelectorAll(".cat-btn");
+    const videoCount = document.getElementById("videoCount");
+
+    let activeCategory = "All";
+
+    function filterVideos() {
+        const search = searchInput.value.toLowerCase();
+        let visibleCount = 0;
+
+        document.querySelectorAll(".video-card").forEach(card => {
+            const textMatch = card.textContent.toLowerCase().includes(search);
+            const category = card.dataset.category;
+            const categoryMatch = activeCategory === "All" || category === activeCategory;
+            const visible = textMatch && categoryMatch;
+            
+            card.style.display = (textMatch && categoryMatch) ? "" : "none";
+            if (visible) {
+                visibleCount++;
+            }
+        });
+        videoCount.textContent = `${visibleCount} Video${visibleCount !== 1 ? "s" : ""}`;
+    }
+
+    searchInput?.addEventListener("input", filterVideos);
+
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+
+            buttons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            activeCategory = btn.dataset.category;
+            filterVideos();
+        });
+    });
+    filterVideos();
+</script>
+{% endblock %}

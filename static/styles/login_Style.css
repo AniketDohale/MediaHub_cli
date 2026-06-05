@@ -1,0 +1,44 @@
+.container-login {
+    width: min(750px, 100%);
+}
+
+.card-login {
+    padding: 20px;
+}
+
+.card-login:hover {
+    /* background: var(--surface-hover); */
+    border-color: #5e5e5e;
+}
+
+input {
+    width: calc(100% - 18px); 
+    padding: 8px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 16px;
+}
+
+input:focus {
+    outline: none;
+    border-color: #02bad2;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    background: #02bad2;
+    color: #000;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    opacity: 0.85;
+}

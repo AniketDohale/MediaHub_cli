@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/apple-touch-icon.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/base_Style.css') }}">
+
+    {% block styles %}{% endblock %}
+</head>
+
+<body>
+    <header class="global-header">
+        <div class="logo-bar">
+            <a href="{{ url_for('index') }}">
+                <img src="/static/logo/logo.png" class="main-logo" alt="Logo">
+            </a>
+
+            <div class="right-icons">
+                {% block header_icons %}
+                <a href="{{ url_for('index') }}" class="logo-btns media-btn" title="Media Library">
+                    <img src="/static/icons/media-player.png" alt="media">
+                </a>
+                {% endblock %}
+            </div>
+        </div>
+    </header>
+
+    {% block flash_messages %}{% endblock %}
+
+    <div class="page-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="app-footer">
+        <p>MediaHub - {{ app_version }}</p>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+
+</body>
+</html>

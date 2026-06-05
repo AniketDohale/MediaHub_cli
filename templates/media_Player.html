@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}{{ video.name }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/media_Style.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="player-container">
+    <div class="player-wrapper">
+        <video id="player" controls preload="auto" playsinline>
+            <source src="{{ url_for('media_Stream', video_id=video.id) }}">
+
+            {% if video.subtitle_path %}
+            <track
+                label="{{ video.subtitle_label or 'English' }}"
+                kind="subtitles"
+                srclang="{{ video.subtitle_lang or 'en' }}"
+                src="{{ url_for('media_Subtitles', video_id=video.id) }}">
+            {% endif %}
+
+            Your Browser does not Support Video Playback.
+        </video>
+
+        <div class="controls-overlay">
+            <!-- Caption -->
+            {% if video.subtitle_path %}
+                <a id="subtitle-btn" class="active" role="button" aria-label="Toggle Subtitles">
+                    CC
+                </a>
+            {% endif %}
+
+            <!-- Resolution -->
+            {% if video.sources and video.sources|length > 1 %}
+            <select id="qualitySelect">
+                {% for quality in video.sources.keys() %}
+                    <option value="{{ quality }}"
+                            {% if quality == video.metadata.resolution %}selected{% endif %}>
+                        {{ quality }}
+                    </option>
+                {% endfor %}
+            </select>
+            {% endif %}
+
+            <!-- Download -->
+            <a id="downloadBtn" href="{{ url_for('media_Download', video_id=video.id) }}?quality={{ video.metadata.resolution }}" class="download-btn">
+                Download
+            </a>
+
+            <!-- Spped -->
+            <select id="speed">
+                <option value="0.25">0.25x</option>
+                <option value="0.5">0.5x</option>
+                <option value="0.75">0.75x</option>
+                <option value="1" selected>1x</option>
+                <option value="1.25">1.25x</option>
+                <option value="1.5">1.5x</option>
+                <option value="1.75">1.75x</option>
+                <option value="2">2x</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="video-info">
+        <div class="info-row">
+            <span class="info-label">File:</span>
+            {{ video.name }}
+        </div>
+
+        <div class="info-row">
+            <span class="info-label">Size:</span>
+            <span id="size">{{ video.metadata.size_mb }} MB</span>
+        </div>
+
+        <div class="info-row">
+            <span class="info-label">Resolution:</span>
+            <span id="resolution">{{ video.metadata.resolution }}</span>
+        </div>
+
+        <div class="info-row">
+            <span class="info-label">Duration:</span>
+            <span id="duration">{{ video.metadata.duration }}</span>
+        </div>
+
+        <div class="info-row">
+            <span class="info-label">Available Resolutions:</span>
+            <span id="available-resolutions">
+                {{ video.sources.keys() | join(" | ") }}
+            </span>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        {% if prev_video %}
+            <a class="nav-btn" href="{{ url_for('media_Player', video_id=prev_video.id) }}">
+                <span class="nav-label prev">{{ prev_video.name }}</span>
+                
+            </a>
+        {% endif %}
+        {% if next_video %}
+            <a class="nav-btn" href="{{ url_for('media_Player', video_id=next_video.id) }}">
+                <span class="nav-label next">{{ next_video.name }}</span>
+            </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const videoId = "{{ video.id }}";
+    const video = document.getElementById("player");
+    const speed = document.getElementById("speed");
+    const qualitySelect = document.getElementById("qualitySelect");
+    const subtitleBtn = document.getElementById("subtitle-btn");
+    const downloadBtn = document.getElementById("downloadBtn");
+
+    speed.addEventListener("change", function () {
+        video.playbackRate = parseFloat(this.value);
+    });
+
+    if (qualitySelect) {
+        downloadBtn.href = `/media/download/${videoId}?quality=${qualitySelect.value}`;
+        qualitySelect.addEventListener("change", async () => {
+            const quality = qualitySelect.value;
+            const currentTime = video.currentTime;
+            const wasPlaying = !video.paused;
+
+            downloadBtn.href = `/media/download/${videoId}?quality=${quality}`;
+            video.src = `/media/stream/${videoId}?quality=${quality}`;
+
+            video.addEventListener("loadedmetadata", function restore() {
+                video.currentTime = currentTime;
+
+                if (wasPlaying) {
+                    video.play();
+                }
+
+                video.removeEventListener("loadedmetadata", restore);
+            });
+
+            const response = await fetch(`/media/metadata/${videoId}?quality=${quality}`);
+            const metadata = await response.json();
+
+            document.getElementById("resolution").textContent = metadata.resolution;
+            document.getElementById("size").textContent = metadata.size_mb + " MB";
+            document.getElementById("duration").textContent = metadata.duration;
+        });
+    }
+
+    if (subtitleBtn && video.textTracks.length > 0) {
+        const track = video.textTracks[0];
+
+        track.mode = "hidden";
+        subtitleBtn.classList.remove("active");
+
+        subtitleBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const enabled = track.mode === "showing";
+            track.mode = enabled ? "hidden" : "showing";
+            subtitleBtn.classList.toggle("active", !enabled);
+        });
+    }
+</script>
+{% endblock %}
