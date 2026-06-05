@@ -1,3 +1,4 @@
-data/
+data/metadata_cache.json
+data/users.json
 __pycache__/
 *.pyc
