@@ -202,3 +202,11 @@ def find_Subtitle(video_file):
     base = os.path.splitext(os.path.basename(video_file))[0]
     path = os.path.join(SUBTITLE_DIR, f"{base}.vtt")
     return path if os.path.exists(path) else None
+
+def refresh_Video_Index():
+    videos = scan_Media()
+
+    VIDEO_INDEX.clear()
+    VIDEO_INDEX.update({v["id"]: v for v in videos})
+
+    return videos

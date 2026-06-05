@@ -13,8 +13,8 @@ from flask import (
 )
 
 from core.utils import (
-    scan_Media,
     VIDEO_INDEX,
+    refresh_Video_Index,
     get_Video_By_ID,
     ensure_Thumbnail
 )
@@ -30,7 +30,7 @@ app = Flask(__name__)
 app.secret_key = "video-manager-dev-key-2026"
 
 # MAJOR.MINOR.PATCH
-APP_VERSION = "v1.0.0"
+APP_VERSION = "v1.1.0"
 
 # Login Page
 @app.route("/login", methods=["GET", "POST"])
@@ -67,9 +67,6 @@ def logout():
 @app.route("/media/player/<video_id>")
 @login_Required
 def media_Player(video_id):
-    if not VIDEO_INDEX:
-        videos = scan_Media()
-        VIDEO_INDEX.update({v["id"]: v for v in videos})
     video = get_Video_By_ID(video_id)
     if not video:
         abort(404)
@@ -102,10 +99,6 @@ def media_Stream(video_id):
 @app.route("/thumbnail/<video_id>")
 @login_Required
 def thumbnail(video_id):
-    if not VIDEO_INDEX:
-        videos = scan_Media()
-        VIDEO_INDEX.update({v["id"]: v for v in videos})
-
     video = get_Video_By_ID(video_id)
     if not video:
         abort(404)
@@ -156,16 +149,19 @@ def media_Metadata(video_id):
 @app.route("/")
 @login_Required
 def index():
-    videos = scan_Media()
+    videos = list(VIDEO_INDEX.values())
+    return render_template("media.html", videos=videos, app_version=APP_VERSION)
 
-    VIDEO_INDEX.clear()
-    VIDEO_INDEX.update({v["id"]: v for v in videos})
+# Scan Media Route
+@app.route("/scan-media", methods=["POST"])
+@login_Required
+def scan_Media_Route():
+    refresh_Video_Index()
+    flash(f"Scan Complete.")
+    return redirect(url_for("index"))
 
-    return render_template(
-        "media.html",
-        videos=videos,
-        app_version=APP_VERSION
-    )
+# Initial Scan
+refresh_Video_Index()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=3001, debug=False)

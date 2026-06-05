@@ -45,11 +45,11 @@
     color: rgba(255, 255, 255, 0.85);
 }
 
-/* .media-header .header-right {
+.media-header .header-right {
     display: flex;
-    gap: 5px;
+    gap: 10px;
     align-items: center;
-} */
+}
 
 .media-header .header-right .media-data {
     font-size: 13px;
@@ -58,6 +58,35 @@
     border: 1px solid var(--border);
     padding: 4px 8px;
     border-radius: 6px;
+}
+
+.scan-form {
+    display: flex;
+    align-items: center;
+}
+
+.scan-btn {
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.scan-btn img {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+.scan-btn:hover {
+    opacity: 1;
 }
 
 .category-bar {
@@ -187,189 +216,9 @@
     font-size: 13px;
 }
 
-/* MEDIA PLAYER THEME*/
-.player-container {
-    width: min(900px, 100%);
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.player-wrapper {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 10px;
-    transition: all 0.2s ease;
-}
-
-.player-wrapper:hover {
-    border-color: rgba(2, 186, 210, 0.35);
-    box-shadow: 0 0 12px rgba(77, 163, 255, 0.12);
-}
-
-#player {
-    width: 100%;
-    max-height: 70vh;
-    border-radius: 10px;
-    background: #000;
-    outline: none;
-}
-
-.controls-overlay {
-    display: flex;
-    justify-content: flex-end;
-    gap: 5px;
-    margin-top: 5px;
-}
-
-/* Speed dropdown */
-#speed {
-    -webkit-tap-highlight-color: transparent;
-    background: transparent;
-    color: #ddd;
-    border: 1px solid #5e5e5e;
-    border-radius: 8px;
-    padding: 4px 8px;
-    cursor: pointer;
-}
-
-#qualitySelect,
-#subtitle-btn,
-.download-btn {
-    -webkit-tap-highlight-color: transparent;
-    background: transparent;
-    color: #ddd;
-    border: 1px solid #5e5e5e;
-    border-radius: 8px;
-    font-size: 14px;
-    padding: 4px 8px;
-    text-decoration: none;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-}
-
-#qualitySelect:hover,
-#subtitle-btn:hover,
-#speed:hover,
-.download-btn:hover {
-    border-color: #02bad2;
-    color: #fff;
-}
-
-#subtitle-btn.active {
-    border-color: #02bad2;
-    background: #24384d;
-}
-
-.video-info {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    padding: 10px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-}
-
-.info-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 6px;
-    font-size: 14px;
-    color: var(--text);
-    transition: 0.2s ease;
-    cursor: pointer;
-    letter-spacing: 1.1px;
-}
-
-.info-row:hover {
-    border-color: rgba(2, 186, 210, 0.35);
-    background: rgba(77, 163, 255, 0.06);
-    transform: translateY(-1px);
-}
-
-.info-label {
-    color: #02bad2;
-    font-weight: 500;
-    letter-spacing: 1.1px;
-}
-
-#available-resolutions{
-    text-transform: uppercase;
-}
-
-.nav-buttons {
-    display: flex;
-    justify-content: space-between;
-    gap: 6px;
-    flex-wrap: wrap; 
-}
-
-.nav-btn {
-    -webkit-tap-highlight-color: transparent;
-    flex: 1;
-    padding: 6px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    text-decoration: none;
-    background: rgba(2, 186, 210, 0.05);
-    text-align: center;
-}
-
-.nav-btn:hover {
-    border-color: rgba(2, 186, 210, 0.35);
-}
-
-.nav-label {
-    font-size: 14px;
-    font-weight: 500;
-    padding: 4px 6px;
-    border-radius: 4px;
-    margin: 0 6px;
-    display: inline-block;
-}
-
-.nav-label.prev {
-    color: #ffcc70;
-}
-
-.nav-label.next {
-    color: #7dd3fc;
-}
-
-video::cue {
-    background-color: transparent;
-    color: white;
-    text-shadow: 0px 0px 6px black;
-}
-
 /* Mobile Responsive */
 @media (max-width: 600px) {
     .video-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .video-info {
-        flex-direction: column;
-        gap: 6px;
-    }
-
-    .info-row {
-        width: fit-content;
-        max-width: 100%;
-        align-self: flex-start;
-        padding: 6px 10px;
-    }
-
-    .nav-buttons {
-        display: grid;
         grid-template-columns: 1fr;
     }
 
