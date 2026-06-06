@@ -30,7 +30,7 @@ app = Flask(__name__)
 app.secret_key = "video-manager-dev-key-2026"
 
 # MAJOR.MINOR.PATCH
-APP_VERSION = "v1.1.2"
+APP_VERSION = "v1.1.3"
 
 # Login Page
 @app.route("/login", methods=["GET", "POST"])
@@ -145,13 +145,6 @@ def media_Metadata(video_id):
     first_source = next(iter(video["sources"].values()))
     return jsonify(first_source["metadata"])
 
-# Media Library
-@app.route("/")
-@login_Required
-def index():
-    videos = list(VIDEO_INDEX.values())
-    return render_template("media.html", videos=videos, app_version=APP_VERSION)
-
 # Scan Media Route
 @app.route("/scan-media", methods=["POST"])
 @login_Required
@@ -159,6 +152,13 @@ def scan_Media_Route():
     refresh_Video_Index()
     flash(f"Scan Complete.")
     return redirect(url_for("index"))
+
+# Media Library
+@app.route("/")
+@login_Required
+def index():
+    videos = list(VIDEO_INDEX.values())
+    return render_template("media.html", videos=videos, app_version=APP_VERSION)
 
 # Initial Scan
 refresh_Video_Index()

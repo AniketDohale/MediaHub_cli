@@ -9,7 +9,7 @@
 {% block content %}
 <div class="player-container">
     <div class="player-wrapper">
-        <video id="player" controls preload="auto" playsinline>
+        <video id="player" data-video-id="{{ video.id }}" controls preload="auto" playsinline>
             <source src="{{ url_for('media_Stream', video_id=video.id) }}">
 
             {% if video.subtitle_path %}
@@ -33,10 +33,10 @@
 
             <!-- Resolution -->
             {% if video.sources and video.sources|length > 1 %}
-            <select id="qualitySelect">
+            <select id="qualitySelect" data-default-quality="{{ video.default_quality }}">
                 {% for quality in video.sources.keys() %}
                     <option value="{{ quality }}"
-                            {% if quality == video.metadata.resolution %}selected{% endif %}>
+                            {% if quality == video.default_quality %}selected{% endif %}>
                         {{ quality }}
                     </option>
                 {% endfor %}
@@ -44,7 +44,7 @@
             {% endif %}
 
             <!-- Download -->
-            <a id="downloadBtn" href="{{ url_for('media_Download', video_id=video.id) }}?quality={{ video.metadata.resolution }}" class="download-btn">
+            <a id="downloadBtn" href="{{ url_for('media_Download', video_id=video.id) }}" class="download-btn">
                 Download
             </a>
 

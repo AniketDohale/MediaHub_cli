@@ -165,6 +165,9 @@ def scan_Media():
                     grouped_videos[video_id]["group_quality"] = new_rank
 
     save_Metadata_Cache(cache)
+    for video in grouped_videos.values():
+        if video["sources"]:
+            video["default_quality"] = min(video["sources"].keys(), key=lambda q: quality_rank.get(q, 0))
     return sorted(list(grouped_videos.values()), key=lambda v: v["name"].lower())
 
 def get_Video_By_ID(video_id):

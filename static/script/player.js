@@ -1,5 +1,5 @@
-const videoId = "{{ video.id }}";
 const video = document.getElementById("player");
+const videoId = video.dataset.videoId;
 const speed = document.getElementById("speed");
 const qualitySelect = document.getElementById("qualitySelect");
 const subtitleBtn = document.getElementById("subtitle-btn");
@@ -8,17 +8,20 @@ const bufferHealth = document.getElementById("buffer-health");
 const networkStatus = document.getElementById("network-status");
 
 // Initial Style for Buffer and Network
-bufferHealth.textContent = "--";
-networkStatus.textContent = "Loading";
+if (bufferHealth && networkStatus) {
+    bufferHealth.textContent = "--";
+    networkStatus.textContent = "Loading";
 
-bufferHealth.style.color = "#ddd";
-networkStatus.style.color = "#ddd";
+    bufferHealth.style.color = "#ddd";
+    networkStatus.style.color = "#ddd";
+}
 
 speed.addEventListener("change", function () {
     video.playbackRate = parseFloat(this.value);
 });
 
 if (qualitySelect) {
+    qualitySelect.value = qualitySelect.dataset.defaultQuality;
     downloadBtn.href = `/media/download/${videoId}?quality=${qualitySelect.value}`;
     qualitySelect.addEventListener("change", async () => {
         const quality = qualitySelect.value;
@@ -27,6 +30,7 @@ if (qualitySelect) {
 
         downloadBtn.href = `/media/download/${videoId}?quality=${quality}`;
         video.src = `/media/stream/${videoId}?quality=${quality}`;
+        video.load();
 
         video.addEventListener("loadedmetadata", function restore() {
             video.currentTime = currentTime;
@@ -44,6 +48,7 @@ if (qualitySelect) {
         document.getElementById("resolution").textContent = metadata.resolution;
         document.getElementById("size").textContent = metadata.size_mb + " MB";
         document.getElementById("duration").textContent = metadata.duration;
+        document.getElementById("bitrate").textContent = metadata.bitrate_mbps + " Mbps";
     });
 }
 
