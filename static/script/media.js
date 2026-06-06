@@ -1,6 +1,8 @@
 const searchInput = document.getElementById("videoSearch");
 const buttons = document.querySelectorAll(".cat-btn");
 const videoCount = document.getElementById("videoCount");
+const scanForm = document.querySelector(".scan-form");
+const scanBtn = document.querySelector(".scan-btn");
 
 let activeCategory = "All";
 
@@ -34,4 +36,9 @@ buttons.forEach(btn => {
         filterVideos();
     });
 });
+
+scanForm?.addEventListener("submit", () => {
+    scanBtn?.classList.add("rotating");
+});
+
 filterVideos();

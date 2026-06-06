@@ -30,7 +30,7 @@ app = Flask(__name__)
 app.secret_key = "video-manager-dev-key-2026"
 
 # MAJOR.MINOR.PATCH
-APP_VERSION = "v1.1.0"
+APP_VERSION = "v1.1.2"
 
 # Login Page
 @app.route("/login", methods=["GET", "POST"])

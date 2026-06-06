@@ -62,6 +62,11 @@
         </div>
     </div>
 
+    <div class="playback-stats">
+        <span>Buffer: <span id="buffer-health">--</span></span>
+        <span>Network: <span id="network-status">--</span></span>
+    </div>
+
     <div class="video-info">
         <div class="info-row">
             <span class="info-label">File:</span>
@@ -89,6 +94,13 @@
                 {{ video.sources.keys() | join(" | ") }}
             </span>
         </div>
+
+        <div class="info-row">
+            <span class="info-label">Video Bitrate:</span>
+            <span id="bitrate">
+                {{ video.metadata.bitrate_mbps }} Mbps
+            </span>
+        </div>
     </div>
 
     <div class="nav-buttons">
@@ -108,59 +120,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-    const videoId = "{{ video.id }}";
-    const video = document.getElementById("player");
-    const speed = document.getElementById("speed");
-    const qualitySelect = document.getElementById("qualitySelect");
-    const subtitleBtn = document.getElementById("subtitle-btn");
-    const downloadBtn = document.getElementById("downloadBtn");
-
-    speed.addEventListener("change", function () {
-        video.playbackRate = parseFloat(this.value);
-    });
-
-    if (qualitySelect) {
-        downloadBtn.href = `/media/download/${videoId}?quality=${qualitySelect.value}`;
-        qualitySelect.addEventListener("change", async () => {
-            const quality = qualitySelect.value;
-            const currentTime = video.currentTime;
-            const wasPlaying = !video.paused;
-
-            downloadBtn.href = `/media/download/${videoId}?quality=${quality}`;
-            video.src = `/media/stream/${videoId}?quality=${quality}`;
-
-            video.addEventListener("loadedmetadata", function restore() {
-                video.currentTime = currentTime;
-
-                if (wasPlaying) {
-                    video.play();
-                }
-
-                video.removeEventListener("loadedmetadata", restore);
-            });
-
-            const response = await fetch(`/media/metadata/${videoId}?quality=${quality}`);
-            const metadata = await response.json();
-
-            document.getElementById("resolution").textContent = metadata.resolution;
-            document.getElementById("size").textContent = metadata.size_mb + " MB";
-            document.getElementById("duration").textContent = metadata.duration;
-        });
-    }
-
-    if (subtitleBtn && video.textTracks.length > 0) {
-        const track = video.textTracks[0];
-
-        track.mode = "hidden";
-        subtitleBtn.classList.remove("active");
-
-        subtitleBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            const enabled = track.mode === "showing";
-            track.mode = enabled ? "hidden" : "showing";
-            subtitleBtn.classList.toggle("active", !enabled);
-        });
-    }
-</script>
+<script src="{{ url_for('static', filename='script/player.js') }}"></script>
 {% endblock %}

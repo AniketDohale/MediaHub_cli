@@ -20,9 +20,7 @@ def get_Video_Metadata(path, cache):
     mtime = os.path.getmtime(path)
     cache_key = os.path.abspath(path)
 
-    if (
-        cache_key in cache and cache[cache_key].get("mtime") == mtime
-    ):
+    if (cache_key in cache and cache[cache_key].get("mtime") == mtime):
         return cache[cache_key]["metadata"]
 
     try:
@@ -46,6 +44,10 @@ def get_Video_Metadata(path, cache):
         duration = float(format_info.get("duration", 0))
         size = int(format_info.get("size", 0))
 
+        bitrate_mbps = 0
+        if duration > 0:
+            bitrate_mbps = round((size * 8) / duration / 1024 / 1024, 2)
+
         width = video_stream.get("width")
         height = video_stream.get("height")
 
@@ -54,7 +56,8 @@ def get_Video_Metadata(path, cache):
             "size_mb": round(size / (1024 * 1024), 2),
             "resolution": (f"{width}x{height}" if width and height else "Unknown"),
             "width": width,
-            "height": height
+            "height": height,
+            "bitrate_mbps": bitrate_mbps
         }
 
         if cache_key not in cache:
