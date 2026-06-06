@@ -28,11 +28,12 @@ if (qualitySelect) {
         const currentTime = video.currentTime;
         const wasPlaying = !video.paused;
 
+        video.pause();
+
         downloadBtn.href = `/media/download/${videoId}?quality=${quality}`;
         video.src = `/media/stream/${videoId}?quality=${quality}`;
-        video.load();
-
-        video.addEventListener("loadedmetadata", function restore() {
+        
+        const onLoaded = () => {    
             video.currentTime = currentTime;
 
             if (wasPlaying) {
@@ -40,7 +41,9 @@ if (qualitySelect) {
             }
 
             video.removeEventListener("loadedmetadata", restore);
-        });
+        };
+        video.addEventListener("loadedmetadata", onLoaded);
+        video.load();
 
         const response = await fetch(`/media/metadata/${videoId}?quality=${quality}`);
         const metadata = await response.json();
