@@ -1,5 +1,3 @@
-
-/* MEDIA PLAYER THEME*/
 .player-container {
     width: min(900px, 100%);
     margin: 0 auto;
@@ -213,5 +211,5 @@ video::cue {
 
 #buffer-health,
 #network-status {
-    font-weight: 600;
+    font-weight: 700;
 }
