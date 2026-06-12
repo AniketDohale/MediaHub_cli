@@ -27,6 +27,12 @@
                 <a href="{{ url_for('index') }}" class="logo-btns media-btn" title="Media Library">
                     <img src="/static/icons/media-player.png" alt="media">
                 </a>
+
+                <form action="{{ url_for('logout') }}" method="POST" class="icon-form logo-btns">
+                    <button type="submit" class="logout-btn" title="Logout">
+                        <img src="/static/icons/logout.png" alt="logout">
+                    </button>
+                </form>
                 {% endblock %}
             </div>
         </div>

@@ -24,14 +24,17 @@ from core.auth import (
     require_Video_Access
 )
 
+from dotenv import load_dotenv
+
 from core.users import authenticate
 
 app = Flask(__name__)
 
-app.secret_key = "video-manager-dev-key-2026"
+load_dotenv()
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 # MAJOR.MINOR.PATCH
-APP_VERSION = "v1.1.5"
+APP_VERSION = "v1.1.6"
 
 # Login Page
 @app.route("/login", methods=["GET", "POST"])

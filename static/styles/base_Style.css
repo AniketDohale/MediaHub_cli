@@ -86,7 +86,14 @@ body {
     transition: 0.2s ease-in-out;
 }
 
+.logout-btn {
+    display: flex;
+    background: transparent;
+    border: none;
+}
+
 .logo-btns img {
+    height: 24px;
     width: 24px;
     opacity: 0.6;
 }
