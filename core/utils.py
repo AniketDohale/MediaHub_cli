@@ -65,11 +65,16 @@ def get_Video_Metadata(path, cache):
                 "mtime": mtime,
                 "metadata": metadata,
                 "category": "Normal",
-                "tags": []
+                "tags": [],
+                "allowed_roles": []
             }
         else:
             cache[cache_key]["mtime"] = mtime
             cache[cache_key]["metadata"] = metadata
+
+        if "allowed_roles" not in cache[cache_key]:
+            cache[cache_key]["allowed_roles"] = []
+
         return metadata
     except:
         return {
@@ -118,6 +123,7 @@ def scan_Media():
 
                 cache_key = os.path.abspath(full_path)
                 category = cache.get(cache_key, {}).get("category", "Normal")
+                allowed_roles = cache.get(cache_key, {}).get("allowed_roles", [])
 
                 width = metadata.get("width", 0)
 
@@ -148,7 +154,8 @@ def scan_Media():
                         "has_subtitle": bool(subtitle_path and os.path.exists(subtitle_path)),
                         "sources": {},
                         "group_quality": float("inf"),
-                        "category": category
+                        "category": category,
+                        "allowed_roles": allowed_roles
                     }
 
                 grouped_videos[video_id]["sources"][res_tag] = {

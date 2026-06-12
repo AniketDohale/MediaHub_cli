@@ -20,7 +20,8 @@ from core.utils import (
 )
 
 from core.auth import (
-    login_Required
+    login_Required,
+    require_Video_Access
 )
 
 from core.users import authenticate
@@ -30,7 +31,7 @@ app = Flask(__name__)
 app.secret_key = "video-manager-dev-key-2026"
 
 # MAJOR.MINOR.PATCH
-APP_VERSION = "v1.1.4"
+APP_VERSION = "v1.1.5"
 
 # Login Page
 @app.route("/login", methods=["GET", "POST"])
@@ -59,7 +60,7 @@ def login():
 @app.route("/logout", methods=["POST"])
 @login_Required
 def logout():
-    session.pop("user", None)
+    session.clear()
     flash("Logged Out Successfully.")
     return redirect(url_for("login"))
 
@@ -68,9 +69,12 @@ def logout():
 @login_Required
 def media_Player(video_id):
     video = get_Video_By_ID(video_id)
-    if not video:
-        abort(404)
-    videos = sorted(VIDEO_INDEX.values(), key=lambda v: v["name"].lower())
+
+    require_Video_Access(video)
+
+    role = session.get("role")
+    videos = [v for v in VIDEO_INDEX.values() if not v.get("allowed_roles") or role in v.get("allowed_roles", [])]
+    videos = sorted(videos, key=lambda v: v["name"].lower())
 
     current_index = next((i for i, v in enumerate(videos) if v["id"] == video_id), None)
     prev_video = videos[current_index - 1] if current_index and current_index > 0 else None
@@ -83,8 +87,8 @@ def media_Player(video_id):
 @login_Required
 def media_Stream(video_id):
     video = get_Video_By_ID(video_id)
-    if not video:
-        abort(404)
+
+    require_Video_Access(video)
 
     requested_quality = request.args.get("quality")
     if requested_quality and requested_quality in video["sources"]:
@@ -100,8 +104,8 @@ def media_Stream(video_id):
 @login_Required
 def thumbnail(video_id):
     video = get_Video_By_ID(video_id)
-    if not video:
-        abort(404)
+
+    require_Video_Access(video)
 
     thumb_path = video["thumbnail"]
     if not os.path.exists(thumb_path):
@@ -113,8 +117,9 @@ def thumbnail(video_id):
 @login_Required
 def media_Download(video_id):
     video = get_Video_By_ID(video_id)
-    if not video:
-        abort(404)
+
+    require_Video_Access(video)
+
     quality = request.args.get("quality")
     if quality and quality in video["sources"]:
         file_path = video["sources"][quality]["path"]
@@ -127,6 +132,9 @@ def media_Download(video_id):
 @login_Required
 def media_Subtitles(video_id):
     video = get_Video_By_ID(video_id)
+
+    require_Video_Access(video)
+
     if not video or not video.get("subtitle_path"):
         abort(404)
     return send_file(video["subtitle_path"], mimetype="text/vtt", conditional=True)
@@ -136,8 +144,9 @@ def media_Subtitles(video_id):
 @login_Required
 def media_Metadata(video_id):
     video = get_Video_By_ID(video_id)
-    if not video:
-        abort(404)
+
+    require_Video_Access(video)
+
     quality = request.args.get("quality")
     if quality and quality in video["sources"]:
         return jsonify(video["sources"][quality]["metadata"])
@@ -157,7 +166,17 @@ def scan_Media_Route():
 @app.route("/")
 @login_Required
 def index():
-    videos = list(VIDEO_INDEX.values())
+    role = session.get("role")
+
+    videos = []
+
+    for video in VIDEO_INDEX.values():
+        allowed_roles = video.get("allowed_roles", [])
+
+        if allowed_roles and role not in allowed_roles:
+            continue
+
+        videos.append(video)
     return render_template("media.html", videos=videos, app_version=APP_VERSION)
 
 # Initial Scan
