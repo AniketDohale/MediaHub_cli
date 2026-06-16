@@ -110,15 +110,20 @@ def scan_Media():
     }
     cache = load_Metadata_Cache()
 
+    existing_files = set()
+    valid_video_ids = set()
+
     for root, dirs, files in os.walk(MEDIA_ROOT):
         for file in files:
             ext = os.path.splitext(file)[1].lower()
             if ext in VIDEO_EXTENSIONS:
-                full_path = os.path.join(root, file)
+                full_path = os.path.abspath(os.path.join(root, file))
+                existing_files.add(full_path)
                 raw_name = os.path.splitext(file)[0]
                 clean_name = re.sub(r'(?i)\b(1080p|4k|2160p|720p)\b', '', raw_name)
                 clean_name = re.sub(r'\s+', ' ', clean_name).strip()
                 video_id = hashlib.md5(clean_name.encode()).hexdigest()[:10]
+                valid_video_ids.add(video_id)
                 metadata = get_Video_Metadata(full_path, cache)
 
                 cache_key = os.path.abspath(full_path)
@@ -171,6 +176,7 @@ def scan_Media():
                     grouped_videos[video_id]["metadata"] = metadata
                     grouped_videos[video_id]["group_quality"] = new_rank
 
+    cleanup_Orphans(cache, valid_video_ids, existing_files)
     save_Metadata_Cache(cache)
     for video in grouped_videos.values():
         if video["sources"]:
@@ -223,3 +229,21 @@ def refresh_Video_Index():
     VIDEO_INDEX.update({v["id"]: v for v in videos})
 
     return videos
+
+def cleanup_Orphans(cache, valid_video_ids, existing_files):
+    # Cache Cleanup
+    for path in list(cache.keys()):
+        if path not in existing_files:
+            del cache[path]
+
+    # Thumbnail Cleanup
+    if os.path.isdir(THUMB_DIR):
+        for file in os.listdir(THUMB_DIR):
+            if file.lower().endswith(".jpg"):
+                video_id = os.path.splitext(file)[0]
+
+                if video_id not in valid_video_ids:
+                    try:
+                        os.remove(os.path.join(THUMB_DIR, file))
+                    except OSError:
+                        pass
