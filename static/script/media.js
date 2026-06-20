@@ -41,4 +41,12 @@ scanForm?.addEventListener("submit", () => {
     scanBtn?.classList.add("rotating");
 });
 
+videoCount?.addEventListener("dblclick", async () => {
+    await fetch("/toggle-admin-videos", {
+        method: "POST"
+    });
+
+    location.reload();
+});
+
 filterVideos();

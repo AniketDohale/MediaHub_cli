@@ -34,7 +34,7 @@ load_dotenv()
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 # MAJOR.MINOR.PATCH
-APP_VERSION = "v1.1.7"
+APP_VERSION = "v1.1.8"
 
 # Login Page
 @app.route("/login", methods=["GET", "POST"])
@@ -165,19 +165,33 @@ def scan_Media_Route():
     flash(f"Scan Complete.")
     return redirect(url_for("index"))
 
+# Hidden Videos from Player
+@app.route("/toggle-admin-videos", methods=["POST"])
+@login_Required
+def toggle_admin_videos():
+    if session.get("role") != "admin":
+        abort(403)
+    session["show_admin_videos"] = not session.get("show_admin_videos", False)
+    return jsonify({"enabled": session["show_admin_videos"]})
+
 # Media Library
 @app.route("/")
 @login_Required
 def index():
     role = session.get("role")
+    show_admin = session.get("show_admin_videos", False)
 
     videos = []
 
     for video in VIDEO_INDEX.values():
         allowed_roles = video.get("allowed_roles", [])
 
-        if allowed_roles and role not in allowed_roles:
-            continue
+        if allowed_roles:
+            if role not in allowed_roles:
+                continue
+
+            if role == "admin" and not show_admin:
+                continue
 
         videos.append(video)
     return render_template("media.html", videos=videos, app_version=APP_VERSION)
