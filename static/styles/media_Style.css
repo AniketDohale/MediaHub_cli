@@ -47,7 +47,7 @@
 
 .media-header .header-right {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
 }
 
@@ -58,6 +58,10 @@
     border: 1px solid var(--border);
     padding: 4px 8px;
     border-radius: 6px;
+}
+
+#videoCount {
+    user-select: none;
 }
 
 .scan-form {
@@ -99,9 +103,9 @@
 
 .category-bar {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
-    padding: 6px 2px;
+    padding: 0 2px 5px 2px;
 }
 
 .cat-btn {

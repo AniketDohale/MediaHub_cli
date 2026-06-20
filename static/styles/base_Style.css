@@ -72,6 +72,17 @@ body {
     gap: 6px;
 }
 
+.usr-data {
+    display: inline-flex;
+    align-items: center;
+    align-self: center;
+    padding: 4px 8px;
+    color: #02bad2;
+    background: rgba(2, 186, 210, 0.10);
+    border: none;
+    border-radius: 10px;
+}
+
 .logo-btns {
     -webkit-tap-highlight-color: transparent;
     height: 38px;

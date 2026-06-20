@@ -6,6 +6,12 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='styles/player_Style.css') }}">
 {% endblock %}
 
+{% block header_icons %}
+<a href="{{ url_for('index') }}" class="logo-btns media-btn" title="Media Library">
+    <img src="/static/icons/media-player.png" alt="media">
+</a>
+{% endblock %}
+
 {% block content %}
 <div class="player-container">
     <div class="player-wrapper">

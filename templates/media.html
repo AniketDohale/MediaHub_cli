@@ -3,11 +3,9 @@
 {% block title %}Media Library{% endblock %}
 
 {% block header_icons %}
-<form action="{{ url_for('logout') }}" method="POST" class="icon-form logo-btns">
-    <button type="submit" class="logout-btn" title="Logout">
-        <img src="/static/icons/logout.png" alt="logout">
-    </button>
-</form>
+<div class="usr-data">
+    {{ username }}
+</div>
 {% endblock %}
 
 {% block styles %}

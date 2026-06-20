@@ -194,7 +194,7 @@ def index():
                 continue
 
         videos.append(video)
-    return render_template("media.html", videos=videos, app_version=APP_VERSION)
+    return render_template("media.html", videos=videos, username=session.get("user"), app_version=APP_VERSION)
 
 # Initial Scan
 refresh_Video_Index()
