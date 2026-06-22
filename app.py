@@ -37,7 +37,7 @@ load_dotenv()
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 # MAJOR.MINOR.PATCH
-APP_VERSION = "v1.2.0"
+APP_VERSION = "v1.2.1"
 
 # Login Page
 @app.route("/login", methods=["GET", "POST"])
@@ -75,6 +75,7 @@ def logout():
 @login_Required
 def media_Player(video_id):
     video = get_Video_By_ID(video_id)
+    print(video.get("tags", []))
 
     require_Video_Access(video)
 
@@ -104,7 +105,10 @@ def update_Video_Settings(video_id):
     if video_path not in cache:
         abort(404)
 
-    category = request.form.get("category", "Normal").strip()
+    category = request.form.get("category", "").strip()
+    if not category:
+        category = "Normal"
+
     tags = [t.strip() for t in request.form.get("tags", "").split(",") if t.strip()]
     allowed_roles = [r.strip() for r in request.form.get("allowed_roles", "").split(",") if r.strip()]
 
@@ -199,7 +203,7 @@ def media_Metadata(video_id):
 @login_Required
 def scan_Media_Route():
     refresh_Video_Index()
-    flash(f"Scan Complete.")
+    flash(f"Scan Complete")
     return redirect(url_for("index"))
 
 # Hidden Videos from Player

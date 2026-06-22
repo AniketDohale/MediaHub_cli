@@ -137,7 +137,7 @@
         <div class="modal-content">
             <form method="POST" action="{{ url_for('update_Video_Settings', video_id=video.id) }}" class="modal-body">
                 <input type="text" name="category" value="{{ video.category }}", placeholder="Category">
-                <input type="text" name="tags" value="{{ video.tags | join(', ') }}", placeholder="Tags">
+                <input type="text" name="tags" value="{{ (video.tags or []) | join(', ') }}", placeholder="Tags">
                 <input type="text" name="allowed_roles" value="{{ video.allowed_roles | join(', ') }}" placeholder="Allowed Roles">
 
                 <div class="modal-actions">

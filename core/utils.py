@@ -127,6 +127,7 @@ def scan_Media():
                 metadata = get_Video_Metadata(full_path, cache)
 
                 cache_key = os.path.abspath(full_path)
+                tags = cache.get(cache_key, {}).get("tags", [])
                 category = cache.get(cache_key, {}).get("category", "Normal")
                 allowed_roles = cache.get(cache_key, {}).get("allowed_roles", [])
 
@@ -160,6 +161,7 @@ def scan_Media():
                         "sources": {},
                         "group_quality": float("inf"),
                         "category": category,
+                        "tags": tags,
                         "allowed_roles": allowed_roles
                     }
 
