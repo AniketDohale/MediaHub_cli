@@ -33,7 +33,13 @@
         </div>
     </header>
 
-    {% block flash_messages %}{% endblock %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="msg-wrapper">
+                <div class="msg" id="flash-msg">{{ messages[0] }}</div>
+            </div>
+        {% endif %}
+    {% endwith %}
 
     <div class="page-content">
         {% block content %}{% endblock %}
@@ -43,6 +49,7 @@
         <p>MediaHub - {{ app_version }}</p>
     </footer>
 
+    <script src="{{ url_for('static', filename='script/message.js') }}"></script>
     {% block scripts %}{% endblock %}
 
 </body>

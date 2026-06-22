@@ -29,6 +29,7 @@
 
 .controls-overlay {
     display: flex;
+    align-items: center;
     justify-content: flex-end;
     gap: 5px;
     margin-top: 5px;
@@ -43,6 +44,30 @@
     border-radius: 8px;
     padding: 4px 8px;
     cursor: pointer;
+}
+
+.cache-btn {
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.cache-btn img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+}
+
+.cache-btn:hover {
+    transform: scale(1.05);
 }
 
 #qualitySelect,
@@ -85,6 +110,7 @@
 }
 
 .info-row {
+    -webkit-tap-highlight-color: transparent;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -160,20 +186,17 @@
 }
 
 .playback-stats > span {
+    -webkit-tap-highlight-color: transparent;
     display: flex;
     align-items: center;
     gap: 6px;
-
     padding: 6px 12px;
-
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 6px;
-
     color: var(--text);
     font-size: 14px;
     letter-spacing: 1.1px;
-
     transition: all 0.2s ease;
     cursor: pointer;
 }

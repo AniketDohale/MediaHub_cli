@@ -104,3 +104,36 @@ setInterval(() => {
         networkStatus.style.color = "#F44336";
     }
 }, 1000);
+
+document.addEventListener("DOMContentLoaded", function () {
+    const btn = document.getElementById("videoSettingsBtn");
+
+    if (btn) {
+        btn.addEventListener("click", openVideoSettingsModal);
+    }
+});
+
+window.openVideoSettingsModal = function () {
+    const modal = document.getElementById("videoSettingsModal");
+    if (!modal) return;
+
+    modal.style.display = "flex";
+    document.body.style.overflow = "hidden";
+};
+
+window.closeVideoSettingsModal = function () {
+    const modal = document.getElementById("videoSettingsModal");
+    if (!modal) return;
+
+    modal.style.display = "none";
+    document.body.style.overflow = "";
+};
+
+window.addEventListener("click", function (e) {
+    document.querySelectorAll(".modal").forEach(modal => {
+        if (e.target === modal) {
+            modal.style.display = "none";
+            document.body.style.overflow = "";
+        }
+    });
+});

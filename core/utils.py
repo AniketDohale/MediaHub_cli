@@ -247,3 +247,20 @@ def cleanup_Orphans(cache, valid_video_ids, existing_files):
                         os.remove(os.path.join(THUMB_DIR, file))
                     except OSError:
                         pass
+
+def get_Visible_Videos(role, show_admin=False):
+    videos = []
+
+    for video in VIDEO_INDEX.values():
+        allowed_roles = video.get("allowed_roles", [])
+
+        if allowed_roles:
+            if role not in allowed_roles:
+                continue
+
+            if role == "admin" and not show_admin:
+                continue
+
+        videos.append(video)
+
+    return sorted(videos, key=lambda v: v["name"].lower())

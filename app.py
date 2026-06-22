@@ -2,12 +2,12 @@ import os, mimetypes
 from flask import (
     Flask,
     request,
+    session,
     render_template,
     redirect,
     url_for,
     send_file,
     flash,
-    session,
     abort,
     jsonify
 )
@@ -16,7 +16,10 @@ from core.utils import (
     VIDEO_INDEX,
     refresh_Video_Index,
     get_Video_By_ID,
-    ensure_Thumbnail
+    ensure_Thumbnail,
+    get_Visible_Videos,
+    load_Metadata_Cache,
+    save_Metadata_Cache
 )
 
 from core.auth import (
@@ -34,7 +37,7 @@ load_dotenv()
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 # MAJOR.MINOR.PATCH
-APP_VERSION = "v1.1.8"
+APP_VERSION = "v1.2.0"
 
 # Login Page
 @app.route("/login", methods=["GET", "POST"])
@@ -75,15 +78,49 @@ def media_Player(video_id):
 
     require_Video_Access(video)
 
-    role = session.get("role")
-    videos = [v for v in VIDEO_INDEX.values() if not v.get("allowed_roles") or role in v.get("allowed_roles", [])]
-    videos = sorted(videos, key=lambda v: v["name"].lower())
+    videos = get_Visible_Videos(session.get("role"), session.get("show_admin_videos", False))
 
     current_index = next((i for i, v in enumerate(videos) if v["id"] == video_id), None)
-    prev_video = videos[current_index - 1] if current_index and current_index > 0 else None
-    next_video = videos[current_index + 1] if current_index is not None and current_index < len(videos) - 1 else None
+    prev_video = (videos[current_index - 1] if current_index and current_index > 0 else None)
+    next_video = ( videos[current_index + 1] if current_index is not None and current_index < len(videos) - 1 else None)
 
     return render_template("media_Player.html", video=video, prev_video=prev_video, next_video=next_video, app_version=APP_VERSION)
+
+# Update Metadata Cache
+@app.route("/video/settings/<video_id>", methods=["POST"])
+@login_Required
+def update_Video_Settings(video_id):
+    if session.get("role") != "admin":
+        abort(403)
+
+    video = get_Video_By_ID(video_id)
+    if not video:
+        abort(404)
+
+    cache = load_Metadata_Cache()
+
+    video_path = os.path.abspath(video["full_path"])
+
+    if video_path not in cache:
+        abort(404)
+
+    category = request.form.get("category", "Normal").strip()
+    tags = [t.strip() for t in request.form.get("tags", "").split(",") if t.strip()]
+    allowed_roles = [r.strip() for r in request.form.get("allowed_roles", "").split(",") if r.strip()]
+
+    cache[video_path]["category"] = category
+    cache[video_path]["tags"] = tags
+    cache[video_path]["allowed_roles"] = allowed_roles
+
+    save_Metadata_Cache(cache)
+    
+    if video_id in VIDEO_INDEX:
+        VIDEO_INDEX[video_id]["category"] = category
+        VIDEO_INDEX[video_id]["tags"] = tags
+        VIDEO_INDEX[video_id]["allowed_roles"] = allowed_roles
+
+    flash("Metadata Updated Successfully")
+    return redirect(url_for("media_Player", video_id=video_id))
 
 # Stream Route
 @app.route("/media/stream/<video_id>")
@@ -178,22 +215,7 @@ def toggle_admin_videos():
 @app.route("/")
 @login_Required
 def index():
-    role = session.get("role")
-    show_admin = session.get("show_admin_videos", False)
-
-    videos = []
-
-    for video in VIDEO_INDEX.values():
-        allowed_roles = video.get("allowed_roles", [])
-
-        if allowed_roles:
-            if role not in allowed_roles:
-                continue
-
-            if role == "admin" and not show_admin:
-                continue
-
-        videos.append(video)
+    videos = get_Visible_Videos(session.get("role"), session.get("show_admin_videos", False))
     return render_template("media.html", videos=videos, username=session.get("user"), app_version=APP_VERSION)
 
 # Initial Scan

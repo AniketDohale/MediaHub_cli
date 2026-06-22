@@ -12,16 +12,6 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='styles/media_Style.css') }}">
 {% endblock %}
 
-{% block flash_messages %}
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <div class="msg-wrapper">
-            <div class="msg" id="flash-msg">{{ messages[0] }}</div>
-        </div>
-    {% endif %}
-{% endwith %}
-{% endblock %}
-
 {% block content %}
 <div class="media-container">
 
@@ -99,5 +89,4 @@
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='script/media.js') }}"></script>
-<script src="{{ url_for('static', filename='script/message.js') }}"></script>
 {% endblock %}

@@ -4,6 +4,7 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='styles/player_Style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/modal.css') }}">
 {% endblock %}
 
 {% block header_icons %}
@@ -30,6 +31,12 @@
         </video>
 
         <div class="controls-overlay">
+            {% if session.role == "admin" %}
+                <button class="cache-btn" id="videoSettingsBtn">
+                    <img src="/static/icons/settings.png" alt="Settings">
+                </button>
+            {% endif %}
+
             <!-- Caption -->
             {% if video.subtitle_path %}
                 <a id="subtitle-btn" class="active" role="button" aria-label="Toggle Subtitles">
@@ -123,6 +130,29 @@
         {% endif %}
     </div>
 </div>
+
+<!-- Metadata Cache Modal -->
+{% if session.role == "admin" %}
+    <div id="videoSettingsModal" class="modal">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('update_Video_Settings', video_id=video.id) }}" class="modal-body">
+                <input type="text" name="category" value="{{ video.category }}", placeholder="Category">
+                <input type="text" name="tags" value="{{ video.tags | join(', ') }}", placeholder="Tags">
+                <input type="text" name="allowed_roles" value="{{ video.allowed_roles | join(', ') }}" placeholder="Allowed Roles">
+
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn cancel" onclick="closeVideoSettingsModal()">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="modal-btn">
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}
