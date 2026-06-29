@@ -175,7 +175,7 @@
 .thumbnail {
     display: block;
     width: 100%;
-    height: auto;
+    height: 180px;
     object-fit: cover;
     object-position: top;
 }
