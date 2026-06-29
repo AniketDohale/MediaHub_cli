@@ -37,7 +37,7 @@ load_dotenv()
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 # MAJOR.MINOR.PATCH
-APP_VERSION = "v1.2.1"
+APP_VERSION = "v1.2.2"
 
 # Login Page
 @app.route("/login", methods=["GET", "POST"])

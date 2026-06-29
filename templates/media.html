@@ -55,22 +55,27 @@
 
             <a class="video-link" href="{{ url_for('media_Player', video_id=video.id) }}">
 
-                <img class="thumbnail" src="{{ url_for('thumbnail', video_id=video.id) }}" alt="thumbnail">
+                <div class="thumbnail-wrapper">
+                    <img class="thumbnail" src="{{ url_for('thumbnail', video_id=video.id) }}" alt="thumbnail">
+                    <span class="thumbnail-duration">
+                        {{ video.metadata.duration if video.metadata is defined else "Unknown" }}
+                    </span>
+                </div>
                 
                 <div class="video-meta">
                     <div class="video-name">
                         {{ video.name }}
                     </div>
 
-                    <div class="video-path">
+                    <!-- <div class="video-path">
                         <span class="meta-pill">{{ video.metadata.resolution if video.metadata is defined else "Unknown" }}</span>
-                        <span class="meta-pill">{{ video.metadata.duration if video.metadata is defined else "Unknown"}}</span>
                         <span class="meta-pill">{{ video.metadata.size_mb if video.metadata is defined else "Unknown"}} MB</span>
+                        <span class="meta-pill">{{ video.metadata.duration if video.metadata is defined else "Unknown"}}</span>
 
                         {% if video.has_subtitle %}
                             <span class="meta-pill subtitle-badge">CC</span>
-                        {% endif %}
-                    </div>
+                        {% endif %} 
+                    </div> -->
                 </div>
             </a>
         </div>
