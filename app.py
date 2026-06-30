@@ -30,6 +30,7 @@ from core.auth import (
 from dotenv import load_dotenv
 
 from core.users import authenticate
+from core.cast import cast_to_TV, stop_Cast
 
 app = Flask(__name__)
 
@@ -37,7 +38,7 @@ load_dotenv()
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 # MAJOR.MINOR.PATCH
-APP_VERSION = "v1.2.2"
+APP_VERSION = "v1.3.0"
 
 # Login Page
 @app.route("/login", methods=["GET", "POST"])
@@ -214,6 +215,30 @@ def toggle_admin_videos():
         abort(403)
     session["show_admin_videos"] = not session.get("show_admin_videos", False)
     return jsonify({"enabled": session["show_admin_videos"]})
+
+
+# Cast File Path to TV
+@app.route("/cast/<video_id>")
+def cast_stream(video_id):
+    video = get_Video_By_ID(video_id)
+    if not video:
+        return "Not Found", 404
+    return send_file(video["full_path"], mimetype="video/mp4", conditional=True)
+
+# Casting Video to Smart TV
+@app.route("/cast-start/<video_id>", methods=["POST"])
+def cast_start(video_id):
+    VIDEO_URL = request.host_url.rstrip("/") + f"/cast/{video_id}"
+
+    result = cast_to_TV(video_url=VIDEO_URL, title=video_id)
+    return jsonify(result)
+
+# Stop Casting
+@app.route("/cast-stop", methods=["POST"])
+def cast_stop():
+    result = stop_Cast()
+    return jsonify(result)
+
 
 # Media Library
 @app.route("/")

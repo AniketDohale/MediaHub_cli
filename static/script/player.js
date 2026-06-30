@@ -137,3 +137,44 @@ window.addEventListener("click", function (e) {
         }
     });
 });
+
+// Casting To TV
+let isCasting = false;
+
+const btn = document.getElementById("cast-btn");
+const icon = btn.querySelector("img");
+
+btn.addEventListener("click", async () => {
+    const videoId = document.getElementById("player").dataset.videoId;
+
+    if (!isCasting) {
+        const res = await fetch(`/cast-start/${videoId}`, {
+            method: "POST"
+        });
+
+        if (res.ok) {
+            isCasting = true;
+
+            icon.src = "/static/icons/stop-cast.png";
+            icon.alt = "stop";
+            btn.classList.add("active");
+        }
+    } 
+    else {
+        const res = await fetch(`/cast-stop`, {
+            method: "POST"
+        });
+
+        if (res.ok) {
+            isCasting = false;
+
+            icon.src = "/static/icons/cast.png";
+            icon.alt = "cast";
+            btn.classList.remove("active");
+        }
+    }
+});
+
+async function castVideo(videoId) {
+    await fetch(`/cast-start/${videoId}`, { method: "POST" });
+}

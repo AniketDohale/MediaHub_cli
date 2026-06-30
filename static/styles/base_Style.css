@@ -116,6 +116,16 @@ body {
     border-color: #5e5e5e;
 }
 
+.cast-tag img {
+    height: 26px;
+    width: 26px;
+}
+
+.cast-tag.active {
+    background: rgba(255, 0, 0, 0.18);
+    border-color: rgba(255, 80, 80, 0.6);
+}
+
 .logo-btns:hover img {
     opacity: 1;
 }
