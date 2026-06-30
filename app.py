@@ -38,7 +38,7 @@ load_dotenv()
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 # MAJOR.MINOR.PATCH
-APP_VERSION = "v1.3.0"
+APP_VERSION = "v1.3.1"
 
 # Login Page
 @app.route("/login", methods=["GET", "POST"])
@@ -129,7 +129,7 @@ def update_Video_Settings(video_id):
 
 # Stream Route
 @app.route("/media/stream/<video_id>")
-@login_Required
+# @login_Required
 def media_Stream(video_id):
     video = get_Video_By_ID(video_id)
 
@@ -228,9 +228,15 @@ def cast_stream(video_id):
 # Casting Video to Smart TV
 @app.route("/cast-start/<video_id>", methods=["POST"])
 def cast_start(video_id):
-    VIDEO_URL = request.host_url.rstrip("/") + f"/cast/{video_id}"
+    quality = request.args.get("quality")
+    base_url = request.host_url.rstrip("/")
 
-    result = cast_to_TV(video_url=VIDEO_URL, title=video_id)
+    if quality:
+        VIDEO_URL = f"{base_url}/media/stream/{video_id}?quality={quality}"
+    else:
+        VIDEO_URL = f"{base_url}/media/stream/{video_id}"
+
+    result = cast_to_TV(VIDEO_URL, title=video_id)
     return jsonify(result)
 
 # Stop Casting

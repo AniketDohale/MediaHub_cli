@@ -1,4 +1,5 @@
 import upnpclient
+from flask import flash
 
 DEFAULT_TV_TIMEOUT = 5
 

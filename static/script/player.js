@@ -142,39 +142,34 @@ window.addEventListener("click", function (e) {
 let isCasting = false;
 
 const btn = document.getElementById("cast-btn");
-const icon = btn.querySelector("img");
+if (btn) {
+    const icon = btn.querySelector("img");
+    btn.addEventListener("click", async () => {
+        const videoId = document.getElementById("player").dataset.videoId;
+        const quality = qualitySelect ? qualitySelect.value : null;
 
-btn.addEventListener("click", async () => {
-    const videoId = document.getElementById("player").dataset.videoId;
+        if (!isCasting) {
+            const url = quality ? `/cast-start/${videoId}?quality=${quality}` : `/cast-start/${videoId}`;
+            const res = await fetch(url, { method: "POST" });
 
-    if (!isCasting) {
-        const res = await fetch(`/cast-start/${videoId}`, {
-            method: "POST"
-        });
+            if (res.ok) {
+                isCasting = true;
+                icon.src = "/static/icons/stop-cast.png";
+                icon.alt = "stop";
+                btn.classList.add("active");
+            }
+        } 
+        else {
+            const res = await fetch(`/cast-stop`, {
+                method: "POST"
+            });
 
-        if (res.ok) {
-            isCasting = true;
-
-            icon.src = "/static/icons/stop-cast.png";
-            icon.alt = "stop";
-            btn.classList.add("active");
+            if (res.ok) {
+                isCasting = false;
+                icon.src = "/static/icons/cast.png";
+                icon.alt = "cast";
+                btn.classList.remove("active");
+            }
         }
-    } 
-    else {
-        const res = await fetch(`/cast-stop`, {
-            method: "POST"
-        });
-
-        if (res.ok) {
-            isCasting = false;
-
-            icon.src = "/static/icons/cast.png";
-            icon.alt = "cast";
-            btn.classList.remove("active");
-        }
-    }
-});
-
-async function castVideo(videoId) {
-    await fetch(`/cast-start/${videoId}`, { method: "POST" });
+    });
 }
