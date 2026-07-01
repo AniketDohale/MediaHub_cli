@@ -1,8 +1,6 @@
 import upnpclient
-from flask import flash
 
 DEFAULT_TV_TIMEOUT = 5
-
 
 def build_didl_Metadata(url, title="Video"):
     return f"""
@@ -17,17 +15,27 @@ def build_didl_Metadata(url, title="Video"):
     """.strip()
 
 
-def discover_TV(timeout=DEFAULT_TV_TIMEOUT):
+def discover_TV_List(timeout=DEFAULT_TV_TIMEOUT):
     devices = upnpclient.discover(timeout=timeout)
-    tv = next((d for d in devices if d.device_type.endswith("MediaRenderer:1")), None)
+    return [
+        d for d in devices
+        if "MediaRenderer" in (d.device_type or "")
+    ]
+
+
+def cast_to_TV(video_url, title="Video", udn=None):
+    devices = discover_TV_List()
+
+    tv = None
+
+    if udn:
+        tv = next((d for d in devices if d.udn == udn), None)
+    else:
+        tv = devices[0] if devices else None
 
     if not tv:
-        raise RuntimeError("No DLNA MediaRenderer found")
-    return tv
+        raise RuntimeError("No TV Selected or Found")
 
-
-def cast_to_TV(video_url, title="Video"):
-    tv = discover_TV()
     av = next((s for s in tv.services if "AVTransport" in s.service_type), None)
 
     if not av:
@@ -41,28 +49,44 @@ def cast_to_TV(video_url, title="Video"):
         CurrentURIMetaData=metadata
     )
 
-    av.Play(
-        InstanceID=0,
-        Speed="1"
-    )
+    av.Play(InstanceID=0, Speed="1")
 
     return {
-        "status": "casting",
+        "status": "Casting",
         "tv": tv.friendly_name,
+        "udn": tv.udn,
         "url": video_url
     }
 
 
-def stop_Cast():
-    tv = discover_TV()
+def stop_Cast(udn=None):
+    devices = discover_TV_List()
+
+    if not devices:
+        raise RuntimeError("No MediaRenderer Devices Found")
+
+    tv = None
+
+    if udn:
+        tv = next((d for d in devices if d.udn == udn), None)
+        if not tv:
+            raise RuntimeError("Selected Device not Found")
+
+    if not tv:
+        tv = devices[0]
+
     av = next((s for s in tv.services if "AVTransport" in s.service_type), None)
 
     if not av:
-        raise RuntimeError("AVTransport service not found")
+        raise RuntimeError("AVTransport Service not Found")
 
-    av.Stop(InstanceID=0)
+    try:
+        av.Stop(InstanceID=0)
+    except Exception as e:
+        raise RuntimeError(f"Stop Failed: {e}")
 
     return {
-        "status": "stopped",
-        "tv": tv.friendly_name
+        "status": "Stopped",
+        "tv": tv.friendly_name,
+        "udn": tv.udn
     }

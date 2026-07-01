@@ -206,9 +206,14 @@
     background: rgba(77, 163, 255, 0.06);
 }
 
+#cast-device-name,
 #buffer-health,
 #network-status {
     font-weight: 700;
+}
+
+#cast-device-name {
+    color: #4CAF50;
 }
 
 video::cue {

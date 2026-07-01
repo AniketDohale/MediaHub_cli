@@ -82,6 +82,9 @@
     <div class="playback-stats">
         <span>Buffer: <span id="buffer-health">--</span></span>
         <span>Network: <span id="network-status">--</span></span>
+        <span id="cast-status" style="display:none">
+            Casting: <span id="cast-device-name"></span>
+        </span>
     </div>
 
     <div class="video-info">
@@ -157,6 +160,25 @@
         </div>
     </div>
 {% endif %}
+
+<!-- Cast Modal -->
+<div id="castModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-field">
+            <label for="deviceSelect">Select Device</label>
+            <select id="deviceSelect"></select>
+        </div>
+        <div class="modal-actions">
+            <button id="cancelCastBtn" class="modal-btn cancel">
+                Cancel
+            </button>
+
+            <button id="confirmCastBtn" class="modal-btn">
+                Cast
+            </button>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}

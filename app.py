@@ -28,17 +28,20 @@ from core.auth import (
 )
 
 from dotenv import load_dotenv
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
 from core.users import authenticate
-from core.cast import cast_to_TV, stop_Cast
+from core.cast import discover_TV_List, cast_to_TV, stop_Cast
 
 app = Flask(__name__)
 
 load_dotenv()
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
+serializer = URLSafeTimedSerializer(app.config["SECRET_KEY"])
+
 # MAJOR.MINOR.PATCH
-APP_VERSION = "v1.3.1"
+APP_VERSION = "v1.3.2"
 
 # Login Page
 @app.route("/login", methods=["GET", "POST"])
@@ -132,8 +135,26 @@ def update_Video_Settings(video_id):
 # @login_Required
 def media_Stream(video_id):
     video = get_Video_By_ID(video_id)
+    
+    if not video:
+        abort(404)
 
-    require_Video_Access(video)
+    cast_token = request.args.get("cast_token")
+
+    if cast_token:
+        try:
+            data = serializer.loads(cast_token, max_age=300)
+            if data.get("video_id") != video_id:
+                abort(403)
+
+        except (BadSignature, SignatureExpired):
+            abort(403)
+
+    else:
+        if "user" not in session:
+            return redirect(url_for("login"))
+
+        require_Video_Access(video)
 
     requested_quality = request.args.get("quality")
     if requested_quality and requested_quality in video["sources"]:
@@ -217,6 +238,19 @@ def toggle_admin_videos():
     return jsonify({"enabled": session["show_admin_videos"]})
 
 
+# Discover Devices
+@app.route("/cast/devices", methods=["GET"])
+def cast_devices():
+    devices = discover_TV_List()
+
+    return jsonify([
+        {
+            "name": d.friendly_name,
+            "udn": d.udn,
+        }
+        for d in devices
+    ])
+
 # Cast File Path to TV
 @app.route("/cast/<video_id>")
 def cast_stream(video_id):
@@ -229,20 +263,28 @@ def cast_stream(video_id):
 @app.route("/cast-start/<video_id>", methods=["POST"])
 def cast_start(video_id):
     quality = request.args.get("quality")
+    udn = request.args.get("udn")
+
     base_url = request.host_url.rstrip("/")
+    token = serializer.dumps({"video_id": video_id})
 
-    if quality:
-        VIDEO_URL = f"{base_url}/media/stream/{video_id}?quality={quality}"
-    else:
-        VIDEO_URL = f"{base_url}/media/stream/{video_id}"
+    VIDEO_URL = (
+        f"{base_url}/media/stream/{video_id}"
+        f"?quality={quality}&cast_token={token}"
+        if quality
+        else f"{base_url}/media/stream/{video_id}?cast_token={token}"
+    )
 
-    result = cast_to_TV(VIDEO_URL, title=video_id)
+    result = cast_to_TV(VIDEO_URL, title=video_id, udn=udn)
     return jsonify(result)
 
 # Stop Casting
 @app.route("/cast-stop", methods=["POST"])
 def cast_stop():
-    result = stop_Cast()
+    data = request.get_json(silent=True) or {}
+    udn = data.get("udn")
+
+    result = stop_Cast(udn)
     return jsonify(result)
 
 
