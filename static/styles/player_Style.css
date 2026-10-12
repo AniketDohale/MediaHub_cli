@@ -37,7 +37,6 @@
 
 /* Speed dropdown */
 #speed {
-    -webkit-tap-highlight-color: transparent;
     background: transparent;
     color: #ddd;
     border: 1px solid #5e5e5e;
@@ -47,7 +46,6 @@
 }
 
 .cache-btn {
-    -webkit-tap-highlight-color: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -73,7 +71,6 @@
 #qualitySelect,
 #subtitle-btn,
 .download-btn {
-    -webkit-tap-highlight-color: transparent;
     background: transparent;
     color: #ddd;
     border: 1px solid #5e5e5e;
@@ -110,7 +107,6 @@
 }
 
 .info-row {
-    -webkit-tap-highlight-color: transparent;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -148,7 +144,6 @@
 }
 
 .nav-btn {
-    -webkit-tap-highlight-color: transparent;
     flex: 1;
     padding: 6px;
     border: 1px solid var(--border);
@@ -186,7 +181,6 @@
 }
 
 .playback-stats > span {
-    -webkit-tap-highlight-color: transparent;
     display: flex;
     align-items: center;
     gap: 6px;

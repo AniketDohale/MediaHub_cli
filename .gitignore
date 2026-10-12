@@ -1,4 +1,5 @@
 data/metadata_cache.json
+data/.MediaHub
 __pycache__/
 *.pyc
 env/

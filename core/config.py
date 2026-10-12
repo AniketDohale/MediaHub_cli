@@ -13,21 +13,33 @@ METADATA_CACHE_FILE = os.path.join(DATA_DIR, "metadata_cache.json")
 
 # For Windows
 if platform.system() == "Windows":
-    MEDIA_ROOT = Path(r"D:\Media")
-# For RaspberryPI
+    MEDIA_ROOTS = [
+        Path(r"D:\Media"),
+        # Add More Directories Here
+        Path(r"E:\Videos"),
+    ]
+
+# For Linux
 elif platform.system() == "Linux":
-    MEDIA_ROOT = Path("/home/raspberry_cli/Shared/USB")
+    MEDIA_ROOTS = [
+        Path("/home/radxa/Shared"),
+        # Add More Directories Here
+        # Path("/media/raspberry/BackupDrive"),
+    ]
+
+else:
+    MEDIA_ROOTS = []
 
 # Central app folder
-APP_DIR = os.path.join(MEDIA_ROOT, ".MediaHub")
+APP_DIR = Path(DATA_DIR) / ".MediaHub"
 
 # Subfolders
-THUMB_DIR = os.path.join(APP_DIR, ".thumbnails")
-SUBTITLE_DIR = os.path.join(APP_DIR, "subtitles")
+THUMB_DIR = APP_DIR / ".thumbnails"
+SUBTITLE_DIR = APP_DIR / "subtitles"
 
 # Video Format Extensions
 VIDEO_EXTENSIONS = {".mp4", ".mkv", ".avi", ".mov", ".webm", ".m4v"}
 
 # Ensure Folders Exist
-os.makedirs(THUMB_DIR, exist_ok=True)
-os.makedirs(SUBTITLE_DIR, exist_ok=True)
+THUMB_DIR.mkdir(parents=True, exist_ok=True)
+SUBTITLE_DIR.mkdir(parents=True, exist_ok=True)

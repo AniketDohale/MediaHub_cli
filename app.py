@@ -24,6 +24,7 @@ from core.utils import (
 
 from core.auth import (
     login_Required,
+    admin_Required,
     require_Video_Access
 )
 
@@ -42,6 +43,13 @@ serializer = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 
 # MAJOR.MINOR.PATCH
 APP_VERSION = "v1.3.2"
+
+# Passing App Version to Every Template
+@app.context_processor
+def inject_app_version():
+    return {
+        "app_version": APP_VERSION
+    }
 
 # Login Page
 @app.route("/login", methods=["GET", "POST"])
@@ -64,14 +72,14 @@ def login():
         
         flash("Invalid Credentials!")
         return redirect(url_for("login"))
-    return render_template("login.html", app_version=APP_VERSION)
+    return render_template("login.html")
 
 # Logout
 @app.route("/logout", methods=["POST"])
 @login_Required
 def logout():
     session.clear()
-    flash("Logged Out Successfully.")
+    flash("Logged Out Successfully")
     return redirect(url_for("login"))
 
 # Video Player
@@ -89,7 +97,7 @@ def media_Player(video_id):
     prev_video = (videos[current_index - 1] if current_index and current_index > 0 else None)
     next_video = ( videos[current_index + 1] if current_index is not None and current_index < len(videos) - 1 else None)
 
-    return render_template("media_Player.html", video=video, prev_video=prev_video, next_video=next_video, app_version=APP_VERSION)
+    return render_template("media_Player.html", video=video, prev_video=prev_video, next_video=next_video)
 
 # Update Metadata Cache
 @app.route("/video/settings/<video_id>", methods=["POST"])
@@ -240,6 +248,7 @@ def toggle_admin_videos():
 
 # Discover Devices
 @app.route("/cast/devices", methods=["GET"])
+@admin_Required
 def cast_devices():
     devices = discover_TV_List()
 
@@ -253,6 +262,7 @@ def cast_devices():
 
 # Cast File Path to TV
 @app.route("/cast/<video_id>")
+@admin_Required
 def cast_stream(video_id):
     video = get_Video_By_ID(video_id)
     if not video:
@@ -261,6 +271,7 @@ def cast_stream(video_id):
 
 # Casting Video to Smart TV
 @app.route("/cast-start/<video_id>", methods=["POST"])
+@admin_Required
 def cast_start(video_id):
     quality = request.args.get("quality")
     udn = request.args.get("udn")
@@ -280,6 +291,7 @@ def cast_start(video_id):
 
 # Stop Casting
 @app.route("/cast-stop", methods=["POST"])
+@admin_Required
 def cast_stop():
     data = request.get_json(silent=True) or {}
     udn = data.get("udn")
@@ -293,7 +305,7 @@ def cast_stop():
 @login_Required
 def index():
     videos = get_Visible_Videos(session.get("role"), session.get("show_admin_videos", False))
-    return render_template("media.html", videos=videos, username=session.get("user"), app_version=APP_VERSION)
+    return render_template("media.html", videos=videos, username=session.get("user"))
 
 # Initial Scan
 refresh_Video_Index()

@@ -3,95 +3,95 @@
 {% block title %}Media Library{% endblock %}
 
 {% block header_icons %}
-<div class="usr-data">
-    {{ username }}
-</div>
+    <div class="usr-data">
+        {{ username }}
+    </div>
 {% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='styles/media_Style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/media_Style.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="media-container">
+    <div class="media-container">
 
-    <div class="header-btns">
-        <input type="text" id="videoSearch" placeholder="Search..." >
-    </div>
+        <div class="header-btns">
+            <input type="text" id="videoSearch" placeholder="Search..." >
+        </div>
 
-    <div class="media-header">
-        <h2>Media Library</h2>
+        <div class="media-header">
+            <h2>Media Library</h2>
 
-        <div class="header-right">
-            <div class="media-data" id="videoCount">
-                {{ videos|length }} Videos
+            <div class="header-right">
+                <div class="media-data" id="videoCount">
+                    {{ videos|length }} Videos
+                </div>
+                <form method="POST" action="{{ url_for('scan_Media_Route') }}" class="scan-form">
+                    <button type="submit" class="scan-btn">
+                        <img src="/static/icons/refresh.png" alt="Scan" title="Scane Media">
+                    </button>
+                </form>
             </div>
-            <form method="POST" action="{{ url_for('scan_Media_Route') }}" class="scan-form">
-                <button type="submit" class="scan-btn">
-                    <img src="/static/icons/refresh.png" alt="Scan" title="Scane Media">
-                </button>
-            </form>
         </div>
-    </div>
 
-    {% if videos %}
-    {% set categories = videos | map(attribute='category') | unique | list %}
+        {% if videos %}
+        {% set categories = videos | map(attribute='category') | unique | list %}
 
-    <div class="category-bar">
-        <button class="cat-btn active" data-category="All">
-            All
-        </button>
-        {% for cat in categories %}
-            <button class="cat-btn" data-category="{{ cat }}">
-                {{ cat }}
+        <div class="category-bar">
+            <button class="cat-btn active" data-category="All">
+                All
             </button>
-        {% endfor %}
-    </div>
-
-    <div class="video-grid" id="videoGrid">
-
-        {% for video in videos %}
-        <div class="video-card searchable" data-category="{{ video.category }}">
-
-            <a class="video-link" href="{{ url_for('media_Player', video_id=video.id) }}">
-
-                <div class="thumbnail-wrapper">
-                    <img class="thumbnail" src="{{ url_for('thumbnail', video_id=video.id) }}" alt="thumbnail">
-                    <span class="thumbnail-duration">
-                        {{ video.metadata.duration if video.metadata is defined else "Unknown" }}
-                    </span>
-                </div>
-                
-                <div class="video-meta">
-                    <div class="video-name">
-                        {{ video.name }}
-                    </div>
-
-                    <!-- <div class="video-path">
-                        <span class="meta-pill">{{ video.metadata.resolution if video.metadata is defined else "Unknown" }}</span>
-                        <span class="meta-pill">{{ video.metadata.size_mb if video.metadata is defined else "Unknown"}} MB</span>
-                        <span class="meta-pill">{{ video.metadata.duration if video.metadata is defined else "Unknown"}}</span>
-
-                        {% if video.has_subtitle %}
-                            <span class="meta-pill subtitle-badge">CC</span>
-                        {% endif %} 
-                    </div> -->
-                </div>
-            </a>
+            {% for cat in categories %}
+                <button class="cat-btn" data-category="{{ cat }}">
+                    {{ cat }}
+                </button>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
 
-    {% else %}
+        <div class="video-grid" id="videoGrid">
 
-    <div class="empty-state">
-        <h3>No Videos Found.</h3>
-        <p>Check Your Media Scan Path.</p>
+            {% for video in videos %}
+            <div class="video-card searchable" data-category="{{ video.category }}">
+
+                <a class="video-link" href="{{ url_for('media_Player', video_id=video.id) }}">
+
+                    <div class="thumbnail-wrapper">
+                        <img class="thumbnail" src="{{ url_for('thumbnail', video_id=video.id) }}" alt="thumbnail">
+                        <span class="thumbnail-duration">
+                            {{ video.metadata.duration if video.metadata is defined else "Unknown" }}
+                        </span>
+                    </div>
+                    
+                    <div class="video-meta">
+                        <div class="video-name">
+                            {{ video.name }}
+                        </div>
+
+                        <!-- <div class="video-path">
+                            <span class="meta-pill">{{ video.metadata.resolution if video.metadata is defined else "Unknown" }}</span>
+                            <span class="meta-pill">{{ video.metadata.size_mb if video.metadata is defined else "Unknown"}} MB</span>
+                            <span class="meta-pill">{{ video.metadata.duration if video.metadata is defined else "Unknown"}}</span>
+
+                            {% if video.has_subtitle %}
+                                <span class="meta-pill subtitle-badge">CC</span>
+                            {% endif %} 
+                        </div> -->
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+
+        <div class="empty-state">
+            <h3>No Videos Found.</h3>
+            <p>Check Your Media Scan Path.</p>
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
-</div>
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='script/media.js') }}"></script>
+    <script src="{{ url_for('static', filename='script/media.js') }}"></script>
 {% endblock %}

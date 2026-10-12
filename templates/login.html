@@ -3,29 +3,29 @@
 {% block title %}Login{% endblock %}
 
 {% block header_icons %}
-<!-- No Icons on Login Page -->
+    <!-- No Icons on Login Page -->
 {% endblock %}
 {% block logout_icon %}{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='styles/login_Style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/login_Style.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="container-login">
-    <div class="card card-login">
-        <div class="header-row">
-            <h2>Login</h2>
-        </div>
-
-        <form method="POST" action="/login">
-            <input name="login" placeholder="Username" required>
-            <input name="password" placeholder="Password" type="password">
-
-            <div class="form-actions">
-                <button type="submit">Login</button>
+    <div class="container-login">
+        <div class="card card-login">
+            <div class="header-row">
+                <h2>Login</h2>
             </div>
-        </form>
+
+            <form method="POST" action="/login">
+                <input name="login" placeholder="Username" required>
+                <input name="password" placeholder="Password" type="password">
+
+                <div class="form-actions">
+                    <button type="submit">Login</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 {% endblock %}

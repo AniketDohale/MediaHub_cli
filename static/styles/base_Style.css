@@ -1,20 +1,27 @@
 @font-face {
-    font-family: "Roboto";
-    src: url("../fonts/Roboto-Regular.woff2") format("woff2");
+    font-family: "Fredoka";
+    src: url("../fonts/Fredoka-Regular.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
 }
 
 @font-face {
-    font-family: "Roboto";
-    src: url("../fonts/Roboto-Medium.woff2") format("woff2");
+    font-family: "Fredoka";
+    src: url("../fonts/Fredoka-Medium.woff2") format("woff2");
     font-weight: 500;
     font-style: normal;
 }
 
 @font-face {
-    font-family: "Roboto";
-    src: url("../fonts/Roboto-Bold.woff2") format("woff2");
+    font-family: "Fredoka";
+    src: url("../fonts/Fredoka-SemiBold.woff2") format("woff2");
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Fredoka";
+    src: url("../fonts/Fredoka-Bold.woff2") format("woff2");
     font-weight: 700;
     font-style: normal;
 }
@@ -30,10 +37,11 @@
 
 html {
     scrollbar-gutter: stable;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
-    font-family: "Roboto", sans-serif;
+    font-family: "Fredoka", Arial, sans-serif;
     padding: 10px;
     margin: 0;
     overflow-y: scroll;
@@ -45,26 +53,33 @@ body {
     color: var(--text);
 }
 
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
 .global-header {
     width: 100%;
-    max-width: 750px; 
+    margin: 0 12px 20px;
+    background: #171a22;
+    border: 1px solid #292d38;
+    border-radius: 6px;
 }
 
 .logo-bar {
-    -webkit-tap-highlight-color: transparent;
-    width: 100%;
+    min-height: 70px;
+    margin: 0 8px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    justify-content: space-between;
+    gap: 20px;
 }
 
 .main-logo {
     max-width: 160px;
     height: auto;
-    opacity: 0.9;
-    border: 1px solid #1a2a3a;
-    border-radius: 10px;
 }
 
 .right-icons {
@@ -85,7 +100,6 @@ body {
 }
 
 .logo-btns {
-    -webkit-tap-highlight-color: transparent;
     height: 38px;
     width: 38px;
     border-radius: 10px;
@@ -102,6 +116,7 @@ body {
     display: flex;
     background: transparent;
     border: none;
+    cursor: pointer;
 }
 
 .logo-btns img {

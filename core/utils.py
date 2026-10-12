@@ -3,7 +3,7 @@ from datetime import timedelta
 from threading import Lock
 
 from .config import (
-    MEDIA_ROOT,
+    MEDIA_ROOTS,
     VIDEO_EXTENSIONS,
     METADATA_CACHE_FILE,
     THUMB_DIR,
@@ -113,25 +113,41 @@ def scan_Media():
     existing_files = set()
     valid_video_ids = set()
 
-    for root, dirs, files in os.walk(MEDIA_ROOT):
-        for file in files:
-            ext = os.path.splitext(file)[1].lower()
-            if ext in VIDEO_EXTENSIONS:
+    # Scan Every Configured Media Directory
+    for media_root in MEDIA_ROOTS:
+        media_root = os.path.abspath(str(media_root))
+
+        if not os.path.isdir(media_root):
+            continue
+
+        for root, dirs, files in os.walk(media_root):
+            for file in files:
+                ext = os.path.splitext(file)[1].lower()
+
+                if ext not in VIDEO_EXTENSIONS:
+                    continue
+
                 full_path = os.path.abspath(os.path.join(root, file))
                 existing_files.add(full_path)
+
                 raw_name = os.path.splitext(file)[0]
+
                 clean_name = re.sub(r'(?i)\b(1080p|4k|2160p|720p)\b', '', raw_name)
                 clean_name = re.sub(r'\s+', ' ', clean_name).strip()
+
                 video_id = hashlib.md5(clean_name.encode()).hexdigest()[:10]
+
                 valid_video_ids.add(video_id)
+
                 metadata = get_Video_Metadata(full_path, cache)
 
                 cache_key = os.path.abspath(full_path)
+
                 tags = cache.get(cache_key, {}).get("tags", [])
                 category = cache.get(cache_key, {}).get("category", "Normal")
                 allowed_roles = cache.get(cache_key, {}).get("allowed_roles", [])
 
-                width = metadata.get("width", 0)
+                width = metadata.get("width") or 0
 
                 if width >= 3840:
                     res_tag = "4K"
@@ -145,7 +161,7 @@ def scan_Media():
                     res_tag = "480p"
                 else:
                     res_tag = metadata.get("resolution", "Unknown")
-                    
+
                 thumb_path = get_Thumbnail_Path(video_id)
                 subtitle_path = find_Subtitle(full_path)
 
@@ -154,9 +170,14 @@ def scan_Media():
                         "id": video_id,
                         "name": clean_name,
                         "full_path": full_path,
-                        "relative": os.path.relpath(full_path, MEDIA_ROOT).replace("\\", "/"),
+                        "relative": os.path.relpath(full_path, media_root).replace("\\", "/"),
                         "thumbnail": thumb_path,
-                        "subtitle_path": subtitle_path if subtitle_path and os.path.exists(subtitle_path) else None,
+                        "subtitle_path": (
+                            subtitle_path
+                            if subtitle_path
+                            and os.path.exists(subtitle_path)
+                            else None
+                        ),
                         "has_subtitle": bool(subtitle_path and os.path.exists(subtitle_path)),
                         "sources": {},
                         "group_quality": float("inf"),
@@ -178,15 +199,20 @@ def scan_Media():
                     grouped_videos[video_id]["metadata"] = metadata
                     grouped_videos[video_id]["group_quality"] = new_rank
 
+    # Run Cleanup and Return after ALL directories are Scanned
     cleanup_Orphans(cache, valid_video_ids, existing_files)
     save_Metadata_Cache(cache)
+
     for video in grouped_videos.values():
         if video["sources"]:
             video["default_quality"] = min(video["sources"].keys(), key=lambda q: quality_rank.get(q, 0))
+
     return sorted(list(grouped_videos.values()), key=lambda v: v["name"].lower())
+
 
 def get_Video_By_ID(video_id):
     return VIDEO_INDEX.get(video_id)
+
 
 def generate_Thumbnail(video_path, video_id):
     thumb_path = os.path.join(THUMB_DIR, f"{video_id}.jpg")
@@ -219,10 +245,12 @@ def ensure_Thumbnail(video_path, video_id):
             generate_Thumbnail(video_path, video_id)
     return thumb_path
 
+
 def find_Subtitle(video_file):
     base = os.path.splitext(os.path.basename(video_file))[0]
     path = os.path.join(SUBTITLE_DIR, f"{base}.vtt")
     return path if os.path.exists(path) else None
+
 
 def refresh_Video_Index():
     videos = scan_Media()
@@ -231,6 +259,7 @@ def refresh_Video_Index():
     VIDEO_INDEX.update({v["id"]: v for v in videos})
 
     return videos
+
 
 def cleanup_Orphans(cache, valid_video_ids, existing_files):
     # Cache Cleanup
@@ -250,6 +279,7 @@ def cleanup_Orphans(cache, valid_video_ids, existing_files):
                     except OSError:
                         pass
 
+
 def get_Visible_Videos(role, show_admin=False):
     videos = []
 
@@ -264,5 +294,4 @@ def get_Visible_Videos(role, show_admin=False):
                 continue
 
         videos.append(video)
-
     return sorted(videos, key=lambda v: v["name"].lower())
