@@ -1,0 +1,252 @@
+.directory-container {
+    width: min(850px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0 auto;
+}
+
+/* Header */
+.directory-header {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 5px 4px;
+}
+
+.directory-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.directory-header p {
+    margin: 0;
+    color: rgba(224, 224, 224, 0.65);
+    font-size: 14px;
+}
+
+/* Add Directory */
+.directory-form {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
+.directory-form input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    color: var(--text);
+    background: #0d1116;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font: inherit;
+    transition: border-color 0.2s ease;
+}
+
+.directory-form input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.directory-form input::placeholder {
+    color: #777;
+}
+
+.add-directory-btn {
+    flex-shrink: 0;
+    padding: 10px 14px;
+    color: #02bad2;
+    background: rgba(2, 186, 210, 0.08);
+    border: 1px solid rgba(2, 186, 210, 0.25);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.add-directory-btn:hover {
+    color: #fff;
+    background: rgba(2, 186, 210, 0.15);
+    border-color: #02bad2;
+}
+
+/* Directory List Section */
+.directory-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.directory-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 4px;
+}
+
+.directory-section-header h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.directory-count {
+    padding: 4px 8px;
+    color: #02bad2;
+    background: rgba(2, 186, 210, 0.08);
+    border: 1px solid rgba(2, 186, 210, 0.15);
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* Directory List */
+.directory-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.directory-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: border-color 0.2s ease;
+}
+
+.directory-item:hover {
+    border-color: rgba(2, 186, 210, 0.35);
+}
+
+.directory-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.directory-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    color: #02bad2;
+    background: rgba(2, 186, 210, 0.08);
+    border: 1px solid rgba(2, 186, 210, 0.12);
+    border-radius: 8px;
+}
+
+.directory-icon img {
+    width: 19px;
+    height: 19px;
+}
+
+.directory-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    padding-top: 2px;
+}
+
+.directory-label {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.directory-path {
+    color: rgba(224, 224, 224, 0.6);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/* Remove Button */
+.remove-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-shrink: 0;
+    padding: 8px 10px;
+    color: #ff7777;
+    background: rgba(255, 80, 80, 0.06);
+    border: 1px solid rgba(255, 80, 80, 0.2);
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.remove-btn:hover {
+    color: #fff;
+    background: rgba(255, 80, 80, 0.16);
+    border-color: rgba(255, 80, 80, 0.55);
+}
+
+/* Empty State */
+.directory-empty {
+    padding: 28px 15px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+}
+
+.directory-empty p {
+    margin: 0;
+    color: rgba(224, 224, 224, 0.6);
+    font-size: 14px;
+}
+
+/* Mobile Reponsive*/
+@media (max-width: 600px) {
+    .directory-container {
+        gap: 10px;
+    }
+
+    .directory-form {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    .directory-form input,
+    .add-directory-btn {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .directory-item {
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .directory-info {
+        gap: 8px;
+    }
+
+    .remove-btn {
+        padding: 8px;
+    }
+}

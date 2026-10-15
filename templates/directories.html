@@ -1,0 +1,79 @@
+
+{% extends "base.html" %}
+
+{% block title %}Manage Media Directories{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/directories_Style.css') }}">
+{% endblock %}
+
+{% block header_icons %}
+    <a href="{{ url_for('index') }}" class="logo-btns media-btn" title="Media Library">
+        <img src="/static/icons/media-player.png" alt="media">
+    </a>
+{% endblock %}
+
+{% block content %}
+    <div class="directory-container">
+
+        <div class="directory-header">
+            <h2>Manage Media Directories</h2>
+            <p>Add or Remove Folders that MediaHub Scans for Videos</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('manage_media_directories') }}" class="directory-form">
+            <input type="text" name="directory" placeholder="Enter Full Directory Path" autocomplete="off" required>
+
+            <button type="submit" name="action" value="add" class="add-directory-btn">
+                Add Directory
+            </button>
+        </form>
+
+        <div class="directory-section">
+            <div class="directory-section-header">
+                <h3>Configured Directories</h3>
+                <span class="directory-count">
+                    {{ directories|length }}
+                    {{ 'Directory' if directories|length == 1 else 'Directories' }}
+                </span>
+            </div>
+
+            {% if directories %}
+                <ul class="directory-list">
+                    {% for directory in directories %}
+                        <li class="directory-item">
+                            <div class="directory-info">
+                                <div class="directory-icon">
+                                    <img src="/static/icons/folder-24.png" alt="Folder">
+                                </div>
+
+                                <div class="directory-details">
+                                    <span class="directory-label">
+                                        Media Folder {{ loop.index }}
+                                    </span>
+
+                                    <span class="directory-path">
+                                        {{ directory }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <form method="POST" action="{{ url_for('manage_media_directories') }}" onsubmit="return confirm('Remove this Directory from MediaHub? The Original Files will not be Deleted.');">
+                                <input type="hidden" name="directory" value="{{ directory }}">
+                                <button type="submit" name="action" value="remove" class="remove-btn">
+                                    Remove
+                                </button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+            {% else %}
+                <div class="directory-empty">
+                    <p>No Media Directories Configured.</p>
+                </div>
+
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

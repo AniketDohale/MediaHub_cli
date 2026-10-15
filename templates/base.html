@@ -35,6 +35,12 @@
         </div>
     </header>
 
+    {% if session.get('user') %}
+        <div class="user-bar">
+            <span class="user-name">{{ session.get('user') }}</span>
+        </div>
+    {% endif %}
+
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             <div class="msg-wrapper">

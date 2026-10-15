@@ -3,12 +3,13 @@ from datetime import timedelta
 from threading import Lock
 
 from .config import (
-    MEDIA_ROOTS,
     VIDEO_EXTENSIONS,
     METADATA_CACHE_FILE,
     THUMB_DIR,
     SUBTITLE_DIR
 )
+
+from .directories import get_Media_Roots
 
 thumb_lock = Lock()
 
@@ -114,7 +115,7 @@ def scan_Media():
     valid_video_ids = set()
 
     # Scan Every Configured Media Directory
-    for media_root in MEDIA_ROOTS:
+    for media_root in get_Media_Roots():
         media_root = os.path.abspath(str(media_root))
 
         if not os.path.isdir(media_root):

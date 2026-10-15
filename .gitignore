@@ -1,5 +1,6 @@
 data/metadata_cache.json
 data/.MediaHub
+data/media_roots.json
 __pycache__/
 *.pyc
 env/

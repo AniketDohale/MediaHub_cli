@@ -2,19 +2,20 @@
 
 {% block title %}Media Library{% endblock %}
 
-{% block header_icons %}
-    <div class="usr-data">
-        {{ username }}
-    </div>
-{% endblock %}
-
 {% block styles %}
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/media_Style.css') }}">
 {% endblock %}
 
+{% block header_icons %}
+    {% if session.get('role') == 'admin' %}
+        <a href="{{ url_for('manage_media_directories') }}" class=" logo-btns directory-settings-btn">
+            <img src="/static/icons/directory.png" alt="Directories">
+        </a>
+    {% endif %}
+{% endblock %}
+
 {% block content %}
     <div class="media-container">
-
         <div class="header-btns">
             <input type="text" id="videoSearch" placeholder="Search..." >
         </div>

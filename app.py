@@ -28,6 +28,12 @@ from core.auth import (
     require_Video_Access
 )
 
+from core.directories import (
+    get_Media_Roots,
+    add_Media_Root,
+    remove_Media_Root,
+)
+
 from dotenv import load_dotenv
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
@@ -42,7 +48,7 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 serializer = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 
 # MAJOR.MINOR.PATCH
-APP_VERSION = "v1.3.2"
+APP_VERSION = "v1.3.3 (Beta)"
 
 # Passing App Version to Every Template
 @app.context_processor
@@ -300,12 +306,41 @@ def cast_stop():
     return jsonify(result)
 
 
+# Edit Media Directories
+@app.route("/settings/media-directories", methods=["GET", "POST"])
+@admin_Required
+def manage_media_directories():
+    if request.method == "POST":
+        action = request.form.get("action")
+        directory = request.form.get("directory", "").strip()
+
+        try:
+            if action == "add":
+                add_Media_Root(directory)
+                refresh_Video_Index()
+                flash("Directory added Successfully")
+
+            elif action == "remove":
+                remove_Media_Root(directory)
+                refresh_Video_Index()
+                flash("Directory Removed Successfully")
+
+            else:
+                abort(400)
+
+        except (ValueError, OSError, RuntimeError) as error:
+            flash(str(error))
+
+        return redirect(url_for("manage_media_directories"))
+    return render_template("directories.html", directories=get_Media_Roots())
+
+
 # Media Library
 @app.route("/")
 @login_Required
 def index():
     videos = get_Visible_Videos(session.get("role"), session.get("show_admin_videos", False))
-    return render_template("media.html", videos=videos, username=session.get("user"))
+    return render_template("media.html", videos=videos)
 
 # Initial Scan
 refresh_Video_Index()
