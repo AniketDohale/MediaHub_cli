@@ -70,7 +70,7 @@ textarea {
 
 .logo-bar {
     min-height: 70px;
-    margin: 0 8px;
+    margin: 0 12px 0 4px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -84,7 +84,6 @@ textarea {
 
 .right-icons {
     display: flex;
-    margin-right: 4px;
     gap: 5px;
 }
 
@@ -157,6 +156,7 @@ textarea {
 .user-name::before {
     content: "@";
     color: #888;
+    letter-spacing: 0.1px;
 }
 
 .card {
